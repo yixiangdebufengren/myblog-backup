@@ -6,7 +6,7 @@
 # 修改主题的 _config.yml
 title: 异乡人博客
 subtitle: 送你一朵小发发🌹
-description: 专注于生活分享搞笑娱乐的博客，分享 生活、娱乐、偶尔的技术与日常见闻，持续更新原创内容。
+description: 专注于分享分享的博客，分享恶搞以及你看不下去打原创内容。
 keywords:
 author: 异乡的捕风人
 language: zh-CN
@@ -14,7 +14,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://yixiangren.us.kg
+url: https://yixiangren.top
 permalink: :abbrlink/
 
 abbrlink:
@@ -113,7 +113,6 @@ deploy:
   type: git
   repo: git@github.com:yixiangdebufengren/yixiangdebufengren.github.io.git
   branch: main
-
 
 search:
   path: search.xml

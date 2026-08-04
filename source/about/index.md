@@ -2,6 +2,7 @@
 title: 关于我
 layout: about
 abbrlink: 3628265361
+top_img: /images/top.jpg
 ---
 
 <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">

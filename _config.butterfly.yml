@@ -11,7 +11,7 @@
 
 nav:
   # Navigation bar logo image
-  logo: /images/butterfly-icon-top.png
+  logo: /images/butterfly-icon-top.ico
   display_title: true
   display_post_title: true
   # Whether to fix navigation bar
@@ -19,13 +19,12 @@ nav:
 
 menu:
   首页: / || fas fa-home
-  归档: /archives/ || fas fa-archive
+  足迹: /archives/ || fas fa-archive
   音乐: /music/ || fas fa-music
-  关于: /about/ || fas fa-user
   # Home: / || fas fa-home
-  # List||fas fa-list:
-  #   Music: /music/ || fas fa-music
-  #   Movie: /movies/ || fas fa-video
+  关于||fas fa-list:
+    链接: /music/ || fas fa-music
+    关于我: /about/ || fas fa-user
 
 # --------------------------------------
 # Code Blocks Settings
@@ -34,7 +33,7 @@ menu:
 code_blocks:
   # Code block theme: darker / pale night / light / ocean / false
   theme: light
-  macStyle: false
+  macStyle: true
   # Code block height limit (unit: px)
   height_limit: false
   word_wrap: false
@@ -43,7 +42,7 @@ code_blocks:
   copy: true
   language: true
   # true: shrink the code blocks | false: expand the code blocks | none: expand code blocks and hide the button
-  shrink: false
+  shrink: true
   fullpage: false
 
 # --------------------------------------
@@ -56,48 +55,46 @@ meta_description:
 # Formal:
 #   icon: link || the description || color
 social:
-  GitHub: https://github.com/yixiangdebufengren || fab fa-github
-  Email: mailto:548568296@qq.com || fa fa-envelope
-  # fab fa-github: https://github.com/xxxxx || Github || '#24292e'
-  # fas fa-envelope: mailto:xxxxxx@gmail.com || Email || '#4a7dbe'
+  fab fa-github: https://github.com/yixiangdebufengren || Github 
+  fas fa-envelope: mailto:fengyigroup@qq.com || 邮箱 
 
 # --------------------------------------
 # Image Settings
 # --------------------------------------
 
-favicon: /images/favicon.png
+favicon: /favicon.ico
 
 avatar:
   img: /images/butterfly-icon.png
-  effect: true
+  effect: false
 
 # Disable all banner images
 disable_top_: false
 
 # If the banner of page not setting, it will show the default_top_img
-default_top_img:
+default_top_img: /images/top.jpg
 
 # The banner image of index page
 index_img: /images/banner.png
 
 # The banner image of archive page
-archive_img:
+archive_img: /images/top.jpg
 
 # Note: tag page, not tags page
-tag_img:
+tag_img: /images/top.jpg
 
 # The banner image of tag page, you can set the banner image for each tag
 # Format:
 #  - tag name: xxxxx
-tag_per_img:
+tag_per_img: /images/top.jpg
 
 # Note: category page, not categories page
-category_img:
+category_img: /images/top.jpg
 
 # The banner image of category page, you can set the banner image for each category
 # Format:
 #  - category name: xxxxx
-category_per_img:
+category_per_img: /images/top.jpg
 
 # The background image of footer
 footer_img: false
@@ -203,7 +200,7 @@ index_layout: 3
 # 3: auto_excerpt (default)
 # false: do not show the article introduction
 index_post_content:
-  method: 3
+  method: 2
   # If you set method to 2 or 3, the length need to config
   length: 500
 
@@ -284,9 +281,9 @@ footer:
     name: 异乡人
   # Copyright of theme and framework
   copyright:
-    enable: true
-    version: true
-  custom_text: "欢迎来到我的博客 | 联系我：548568296@qq.com"
+    enable: false
+    version: false
+  custom_text: <div><a onclick="window.open('https://beian.miit.gov.cn/#/home')">陕ICP备2026018269号</a></div><div>欢迎来到我的博客 | 联系我：548568296@qq.com</div>
 
 # --------------------------------------
 # Aside Settings
@@ -314,7 +311,14 @@ aside:
       link: https://github.com/yixiangdebufengren
   card_announcement:
     enable: true
-    content: 来看的都是帅哥美女😜😜😜
+    content: |
+      <p>⚙️ 框架核心：Hexo</p>
+      <p>🕹️ 界面设计：Butterfly</p>
+      <p>🔮 域名托管：cloudflare</p>
+      <p>🎰 部署平台：GitHub Pages</p>
+      <p style="text-align:center;">
+      <img src="/images/notice.gif" alt="公告GIF" style="width:auto; max-width:100%; height:auto;">
+      </p>
   card_recent_post:
     enable: true
     # If set 0 will show all
@@ -380,7 +384,7 @@ aside:
 # --------------------------------------
 
 # The distance between the bottom right button and the bottom (default unit: px)
-rightside_bottom:
+rightside_bottom: 80px
 
 # Conversion between Traditional and Simplified Chinese
 translate:
@@ -450,7 +454,7 @@ copy:
 
 # Need to install the hexo-wordcount plugin
 wordcount:
-  enable: false
+  enable: true
   # Display the word count of the article in post meta
   post_wordcount: true
   # Display the time to read the article in post meta
@@ -474,7 +478,7 @@ busuanzi:
 math:
   # Choose: mathjax, katex
   # Leave it empty if you don't need math
-  use:
+  use: mathjax
   per_page: true
   hide_scrollbar: false
 
@@ -546,7 +550,7 @@ share:
 # --------------------------------------
 
 comments: 
-  use: valine
+  use: waline
   # Display the comment name next to the button
   text: false
   # Lazyload: The comment system will be load when comment element enters the browser's viewport.
@@ -594,24 +598,6 @@ valine:
   avatar_cdn: 'https://cravatar.cn/avatar/'  # 可选自定义 CDN
   serverURLs: https://api.yixiangren.us.kg
   # 新：把 qq 加入 meta，这样 Valine 会把 qq 一并保存到后端
-  requiredFields: []
-  emojiMaps:
-    smile: "https://cdn.example.com/emojis/smile.png"
-    cry: "https://cdn.example.com/emojis/cry.png"
-  metaPlaceholder:
-    nick: '你的昵称'
-    mail: '邮箱选填，输入QQ邮箱显示头像'
-    link: '个人网站(选填)'
-    qq: 'QQ号码(选填显示头像)'
-
-  # 随机评论输入框提示语
-  placeholders:
-    - "写下你的精彩评论吧~"
-    - "友善发言，理性讨论 🤝"
-    - "你的想法很重要~"
-    - "说点什么，让大家听见 📢"
-    - "来都来了，留个言呗 😄"
-  bg: " "
   visitor: false
   pageSize: 10
   option: null
@@ -619,12 +605,14 @@ valine:
   # Waline - A simple comment system with backend support fork from Valine
 # https://waline.js.org/
 waline:
-  serverURL:
+  serverURL: https://waline.yixiangren.top
   bg:
   # Use Waline pageview count as the page view count
   pageview: false
   option:
-
+    meta: ['nick', 'mail' ]
+    emoji:
+      - https://unpkg.com/@waline/emojis@1.4.0/bilibili
 # Utterances
 # https://utteranc.es/
 utterances:
@@ -943,6 +931,9 @@ clickShowText:
 # https://fancyapps.com/fancybox/
 # Leave it empty if you don't need lightbox
 lightbox: fancybox
+# Fancybox 设置
+fancybox:
+  enable: true      # 是否开启 Fancybox
 
 # --------------------------------------
 # Tag Plugins settings
@@ -1013,9 +1004,10 @@ note:
 
 # https://github.com/MoOx/pjax
 pjax:
-  enable: false
+  enable: true
   # Exclude the specified pages from pjax, such as '/music/'
   exclude:
+    - /comment/
     # - /xxxxxx/
 
 # Inject the css and script (aplayer/meting)
@@ -1083,9 +1075,18 @@ css_prefix: true
 # Insert the code to head (before '</head>' tag) and the bottom (before '</body>' tag)
 inject:
   head:
-    # - <link rel="stylesheet" href="/xxx.css"
+  #低栏透明
+    - <link rel="stylesheet" href="/css/mycss.css">
+  #评论waline
+    - <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline-meta.css" />
+    #- <link rel="stylesheet" href="/css/console.css">
+    - <link rel="stylesheet" href="/css/music-ball.css">
+    #- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   bottom:
-    # - <script src="xxxx"></script>
+  #花瓣飘落js
+    - <script src="/js/newjs.js"></script>
+    - <script src="/js/comment.js"></script>
+    - <script src="/js/music-ball.js"></script>
 
 # CDN Settings
 # Don't modify the following settings unless you know how they work
@@ -1161,7 +1162,3 @@ CDN:
     # valine: https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/valine/1.4.16/Valine.min.js
     # waline_css:
     # waline_js:
-title:
-  separator: " | "
-  show_site_name: true
-  post_title: false

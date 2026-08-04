@@ -1,0 +1,20 @@
+/*底部透明背景设置*/
+#footer {
+    background: transparent;
+}
+
+/*自动切换颜色设置*/
+html[data-theme="light"] #footer * {
+  color: #000000 !important;
+}
+html[data-theme="dark"] #footer * {
+  color: #ffffff !important;
+}
+
+/*备案图标大小控制*/
+#footer a img {
+  height: auto;
+  width: 1em;
+  vertical-align: middle;
+  margin-right: 0.5em;
+}   
