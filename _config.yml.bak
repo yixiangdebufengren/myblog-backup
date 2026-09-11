@@ -127,8 +127,3 @@ sitemap:
     - /tags/**         # 排除 tags 页面
     - /archives/**       # 排除归档页（如果你不希望抓取）
     - /categories/**     # 排除分类页
-    
-# hexo-blog-encrypt 配置
-encrypt:
-  kdf:
-    iterations: 600000
