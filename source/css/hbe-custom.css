@@ -40,26 +40,26 @@
   min-width: 0;
 }
 
-.hbe-input-field,
-.hbe-input-field-default {
-  float: none;
-  width: 100%;
-  opacity: 1;
-  padding: 0.95em 1.4em;
-  margin: 0 0 0.5em;
-  background: rgba(255, 255, 255, 0.75);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(0, 0, 0, 0.10);
-  border-radius: var(--hbe-radius);
-  color: #202124;
-  font-size: 1.02rem;
-  font-family: inherit;
-  line-height: 1.4;
-  box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-}
+ .hbe-input-field,
+ .hbe-input-field-default {
+   float: none;
+   width: 100%;
+   opacity: 1 !important;
+   padding: 0.95em 1.4em;
+   margin: 0 0 0.5em;
+   background: rgba(255, 255, 255, 0.75) !important;
+   -webkit-backdrop-filter: blur(8px);
+   backdrop-filter: blur(8px);
+   border: 1.5px solid rgba(0, 0, 0, 0.10) !important;
+   border-radius: var(--hbe-radius) !important;
+   color: #202124 !important;
+   font-size: 1.02rem;
+   font-family: inherit;
+   line-height: 1.4;
+   box-sizing: border-box;
+   box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+ }
 
 .hbe-input-field::placeholder,
 .hbe-input-field-default::placeholder {
@@ -67,25 +67,33 @@
 }
 
 .hbe-input-field:hover,
-.hbe-input-field-default:hover {
-  border-color: rgba(0, 0, 0, 0.18);
-  box-shadow: 0 2px 6px rgba(60, 64, 67, 0.14);
-}
+ .hbe-input-field-default:hover {
+   border-color: rgba(0, 0, 0, 0.18) !important;
+   box-shadow: 0 2px 6px rgba(60, 64, 67, 0.14);
+ }
 
-.hbe-input-field:focus,
-.hbe-input-field-default:focus {
-  border-color: var(--hbe-accent);
-  background: #ffffff;
-  box-shadow: 0 1px 6px rgba(26, 115, 232, 0.35),
-              0 1px 3px rgba(26, 115, 232, 0.1);
-  outline: none;
-}
+ .hbe-input-field:focus,
+ .hbe-input-field-default:focus {
+   opacity: 1 !important;
+   border-color: var(--hbe-accent) !important;
+   background: #ffffff !important;
+   border-radius: var(--hbe-radius) !important;
+   box-shadow: 0 1px 6px rgba(26, 115, 232, 0.35),
+               0 1px 3px rgba(26, 115, 232, 0.1);
+   outline: none;
+ }
 
-/* 隐藏默认主题的 ::before/::after 下划线动画 */
-.hbe-input-label-default::before,
-.hbe-input-label-default::after {
-  display: none;
-}
+/* 隐藏默认主题的 ::before/::after 下划线动画（关键：必须 !important 压住插件动画） */
+ .hbe-input-label-default::before,
+ .hbe-input-label-default::after {
+   display: none !important;
+   content: none !important;
+   opacity: 0 !important;
+   transform: none !important;
+   height: 0 !important;
+   width: 0 !important;
+   background: transparent !important;
+ }
 
 /* label 还原成普通提示文字，放输入框上方 */
 .hbe-input-label,
@@ -120,47 +128,48 @@
 }
 
 /* ===== 按钮：胶囊形，悬停微抬升 + 光晕 ===== */
-.hbe-button {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  padding: 0.9em 1.8em;
-  margin: 0.6em auto 0.4em;
-  background: var(--hbe-accent);
-  border: none;
-  border-radius: var(--hbe-radius);
-  color: #ffffff;
-  font-size: 1.02rem;
-  font-weight: 600;
-  font-family: inherit;
-  text-align: center;
-  text-indent: 0;
-  text-shadow: none;
-  box-shadow: 0 3px 12px rgba(26, 115, 232, 0.35);
-  cursor: pointer;
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1),
-              box-shadow 0.18s, background 0.18s;
-}
+ .hbe-button {
+   width: 100%;
+   max-width: 100%;
+   height: auto;
+   padding: 0.9em 1.8em;
+   margin: 0.6em auto 0.4em;
+   background: var(--hbe-accent) !important;
+   border: none !important;
+   border-radius: var(--hbe-radius) !important;
+   color: #ffffff !important;
+   font-size: 1.02rem;
+   font-weight: 600;
+   font-family: inherit;
+   text-align: center !important;
+   text-indent: 0 !important;
+   text-shadow: none !important;
+   box-shadow: 0 3px 12px rgba(26, 115, 232, 0.35);
+   cursor: pointer;
+   border-bottom: none !important;
+   transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1),
+               box-shadow 0.18s, background 0.18s;
+ }
 
-.hbe-button:hover,
-.hbe-button:focus {
-  background: #1765cc;
-  box-shadow: 0 5px 18px rgba(26, 115, 232, 0.45);
-  transform: translateY(-2px);
-  outline: none;
-}
+ .hbe-button:hover,
+ .hbe-button:focus {
+   background: #1765cc !important;
+   box-shadow: 0 5px 18px rgba(26, 115, 232, 0.45);
+   transform: translateY(-2px);
+   outline: none;
+ }
 
-.hbe-button:active {
-  background: #185bbc;
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.35);
-}
+ .hbe-button:active {
+   background: #185bbc !important;
+   transform: translateY(0);
+   box-shadow: 0 2px 8px rgba(26, 115, 232, 0.35);
+ }
 
-/* 去掉默认按钮右侧箭头装饰块 */
-.hbe-button:after {
-  content: none;
-  display: none;
-}
+ /* 去掉默认按钮右侧箭头装饰块 */
+ .hbe-button:after {
+   content: none !important;
+   display: none !important;
+ }
 
 /* ===== 错误提示 ===== */
 .hbe-error {
@@ -190,19 +199,19 @@
   }
   .hbe-input-field,
   .hbe-input-field-default {
-    background: rgba(60, 64, 67, 0.7);
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #e8eaed;
+    background: rgba(60, 64, 67, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #e8eaed !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
   .hbe-input-field:hover,
   .hbe-input-field-default:hover {
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.25) !important;
   }
   .hbe-input-field:focus,
   .hbe-input-field-default:focus {
-    border-color: #8ab4f8;
-    background: rgba(60, 64, 67, 0.9);
+    border-color: #8ab4f8 !important;
+    background: rgba(60, 64, 67, 0.9) !important;
     box-shadow: 0 1px 6px rgba(138, 180, 248, 0.4);
   }
   .hbe-input-label,
