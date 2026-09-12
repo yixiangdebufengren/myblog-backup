@@ -843,7 +843,7 @@ beautify:
 font:
   global_font_size:
   code_font_size:
-  font_family:
+  font_family: YSHaoShenTi-2
   code_font_family:
 
 # Font settings for the site title and site subtitle
