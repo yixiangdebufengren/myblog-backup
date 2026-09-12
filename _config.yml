@@ -130,5 +130,9 @@ sitemap:
     
 # hexo-blog-encrypt 配置
 encrypt:
+  message: 请输入密码
+  wrong_pass_message: 密码错误，请重新输入
+  decryptButton:
+    text: 解密
   kdf:
     iterations: 600000
