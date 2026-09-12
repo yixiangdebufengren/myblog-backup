@@ -283,7 +283,7 @@ footer:
   copyright:
     enable: false
     version: false
-  custom_text: <div><a onclick="window.open('')">陕ICP备2026018269号</a></div><div>欢迎来到我的博客 | 联系我：548568296@qq.com</div>
+  custom_text: <div><a onclick="window.open('https://beian.miit.gov.cn/#/home')">陕ICP备2026018269号</a></div><div>欢迎来到我的博客 | 联系我：548568296@qq.com</div>
 
 # --------------------------------------
 # Aside Settings

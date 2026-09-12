@@ -1079,7 +1079,7 @@ inject:
     - <link rel="stylesheet" href="/css/mycss.css">
   #评论waline
     - <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline-meta.css" />
-    #- <link rel="stylesheet" href="/css/console.css">
+    - <link rel="stylesheet" href="/css/fonts.css">
     - <link rel="stylesheet" href="/css/music-ball.css">
     #- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   bottom:
