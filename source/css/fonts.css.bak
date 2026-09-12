@@ -10,3 +10,6 @@
     font-display: swap;
     src: url('/font/HarmonyOS_Sans_SC_Regular.ttf') format("truetype");
 }
+body {
+    font-family: 'YSHaoShenTi-2';
+}
