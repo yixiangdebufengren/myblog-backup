@@ -1,12 +1,15 @@
 @font-face{
-    font-family: 'YSHaoShenTi-2';
+    font-family: 'Myfont';
     font-display: swap;
     src: url('/fonts/YSHaoShenTi-2.ttf') format("truetype");
     font-weight: normal;
     font-style: normal;
 }
+
 @font-face{
-    font-family: 'HarmonyOS Sans SC';
+    font-family: 'DYH';
     font-display: swap;
-    src: url('/font/HarmonyOS_Sans_SC_Regular.ttf') format("truetype");
+    src: url('/fonts/LXGWWenKaiLite-Regular.ttf') format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
