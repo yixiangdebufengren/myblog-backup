@@ -10,7 +10,7 @@
       input.placeholder = 'QQ号可显示头像'
     }
     if (input1) {
-      input1.placeholder = '可选(填写后可收到邮件评论)'
+      input1.placeholder = '可选'
     }
 
     if (label) {
