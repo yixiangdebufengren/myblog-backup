@@ -11,7 +11,7 @@
 
 nav:
   # Navigation bar logo image
-  logo: /images/butterfly-icon-top.ico
+  logo: /favicon.ico
   display_title: true
   display_post_title: true
   # Whether to fix navigation bar
@@ -62,10 +62,10 @@ social:
 # Image Settings
 # --------------------------------------
 
-favicon: /images/butterfly-icon.png
+favicon: /favicon.ico
 
 avatar:
-  img: /images/butterfly-icon.png
+  img: /images/avatar.png
   effect: false
 
 # Disable all banner images

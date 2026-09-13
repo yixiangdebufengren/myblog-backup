@@ -11,7 +11,7 @@
 
 nav:
   # Navigation bar logo image
-  logo: /images/butterfly-icon-top.ico
+  logo: /favicon.ico
   display_title: true
   display_post_title: true
   # Whether to fix navigation bar
@@ -62,10 +62,10 @@ social:
 # Image Settings
 # --------------------------------------
 
-favicon: /favicon.ico
+favicon: /images/favicon.ico
 
 avatar:
-  img: /images/butterfly-icon.png
+  img: /images/avatar.png
   effect: false
 
 # Disable all banner images
@@ -843,7 +843,7 @@ beautify:
 font:
   global_font_size:
   code_font_size:
-  font_family: YSHaoShenTi-2
+  font_family: 'LXGW WenKai Lite'
   code_font_family:
 
 # Font settings for the site title and site subtitle
@@ -1080,6 +1080,7 @@ inject:
   #评论waline
     - <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline-meta.css" />
     - <link rel="stylesheet" href="/css/fonts.css">
+    - <link rel="stylesheet" href="/css/hbe-custom.css">
     - <link rel="stylesheet" href="/css/music-ball.css">
     #- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   bottom:
