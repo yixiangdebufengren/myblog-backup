@@ -17,7 +17,7 @@ top_img: /images/top.jpg
   <p>这是我的个人博客网站</p>
   <p>欢迎你们的访问</p>
   <p>送你一朵小发发🌹</p>
-  <p>微信号：yixiangbufengren</p>
+  <p>微信号：isyixiangren</p>
   <p>QQ ：548568296</p>
   <p>你这么帅一定关注我的
     <img src="/images/heart.gif" alt="比心" role="img" style="width:28px; height:auto; vertical-align:middle; margin-left:8px;">
@@ -27,7 +27,7 @@ top_img: /images/top.jpg
 <!-- 小号字体联系信息 -->
 <div style="font-size: 0.9em; color: #7f8c8d; margin-top: 30px;">
   <p>📧 联系邮箱：548568296@qq.com</p>
-  <p>🌐 个人网站：yixiangren.us.kg</p>
+  <p>🌐 个人网站：yixiangren.top</p>
 </div>
 
 </div>
