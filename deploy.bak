@@ -1,0 +1,76 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+BLOG_DIR="$HOME/myblog"
+BACKUP_REMOTE="backup"          # 备份用的 remote 名称
+BACKUP_BRANCH="main"            # 备份分支
+
+echo "===== Hexo Blog Deploy ====="
+
+# 检查博客目录
+if [ ! -d "$BLOG_DIR" ]; then
+    echo "错误：找不到博客目录 $BLOG_DIR"
+    exit 1
+fi
+
+cd "$BLOG_DIR" || exit 1
+
+# ========== 1. 源码备份 ==========
+echo ""
+echo ">>> [1/4] 备份源码到 GitHub..."
+
+# 检查备份 remote 是否存在
+if git remote get-url "$BACKUP_REMOTE" > /dev/null 2>&1; then
+    echo "  添加所有变更..."
+    git add -A
+
+    # 仅在有变更时才提交
+    if git diff --cached --quiet 2>/dev/null && git diff --quiet 2>/dev/null; then
+        echo "  没有新变更，跳过备份提交。"
+    else
+        git commit -m "backup: $(date '+%Y-%m-%d %H:%M')"
+        echo "  推送源码到 $BACKUP_REMOTE..."
+        git push "$BACKUP_REMOTE" "$BACKUP_BRANCH"
+        if [ $? -ne 0 ]; then
+            echo "  ⚠ 源码备份推送失败，继续部署..."
+        else
+            echo "  ✓ 源码备份完成"
+        fi
+    fi
+else
+    echo "  ⚠ 未配置备份远程仓库 ($BACKUP_REMOTE)，跳过备份。"
+    echo "  如需备份源码，请执行："
+    echo "    cd $BLOG_DIR"
+    echo "    git remote add backup git@github.com:yixiangdebufengren/myblog-backup.git"
+fi
+
+# 同时备份部署脚本自身
+cp "$HOME/deploy" "$BLOG_DIR/deploy"
+
+# ========== 2. 清理 ==========
+echo ""
+echo ">>> [2/4] 正在清理..."
+hexo clean
+
+# ========== 3. 生成 ==========
+echo ""
+echo ">>> [3/4] 正在生成..."
+hexo generate
+
+if [ $? -ne 0 ]; then
+    echo "Hexo生成失败"
+    exit 1
+fi
+
+# ========== 4. 部署 ==========
+echo ""
+echo ">>> [4/4] 正在部署..."
+hexo deploy
+
+if [ $? -ne 0 ]; then
+    echo "Hexo部署失败"
+    exit 1
+fi
+
+echo ""
+echo "===== 全部完成 ====="
+
