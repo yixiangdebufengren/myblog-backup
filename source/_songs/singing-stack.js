@@ -141,7 +141,7 @@
           'translate3d(' + (position * OFFSET_X) + 'px, ' +
           (position * OFFSET_Y) + 'px, 0)';
         el.style.zIndex = String(10 - position);
-        el.style.opacity = String(1 - position * 0.12);
+        el.style.opacity = String(Math.max(0.2, Math.min(1, 1 - position * 0.12)));
         el.style.pointerEvents = 'none';
       }
       el.classList.toggle('is-top', position === 0);
@@ -181,6 +181,9 @@
           n.el.style.transition = 'none';
           n.el.style.transform = 'translate3d(0, 26px, 0)';
           n.el.style.opacity = '0.4';
+          n.el.style.zIndex = '10';
+          n.el.style.pointerEvents = 'auto';
+          n.el.classList.add('is-top');
           void n.el.offsetWidth;
           n.el.style.transition = '';
           n.el.style.transform = 'translate3d(0, 0, 0)';
@@ -189,6 +192,52 @@
           placeCard(n.el, n.position, 0, 0);
         }
       }
+
+      if (posEl) posEl.textContent = String(cursor + 1);
+      bindTopGesture();
+    }
+
+    /* ---------- 增量推进：不重建 DOM，避免新顶牌二次弹起 ---------- */
+    function advanceInPlace(flewEl) {
+      // 1. 把飞走那张从 DOM 和 nodes 里移除
+      //    直接用传入的元素引用删除，最可靠
+      if (flewEl && flewEl.parentNode) {
+        flewEl.parentNode.removeChild(flewEl);
+      }
+      var keptNodes = [];
+      for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        if (node.el === flewEl) continue;          // 已删除的跳过
+        if (!node.el.parentNode) continue;         // 已被移除的跳过
+        if (node.el.classList.contains('fly-out')) continue;
+        keptNodes.push(node);
+      }
+      nodes = keptNodes;
+
+      // 2. 剩下的牌 position 各减 1，直接就位（不再弹动）
+      for (var j = 0; j < nodes.length; j++) {
+        nodes[j].position = nodes[j].position - 1;
+        var n = nodes[j];
+        n.el.classList.remove('dragging', 'rebound', 'fly-out');
+        n.el.style.transition = '';
+        n.el.style.opacity = '';
+        placeCard(n.el, n.position, 0, 0);
+      }
+
+      // 3. 末尾补一张新牌（只在末尾淡入，不做弹起）
+      var p = VISIBLE - 1;
+      var realIdx = (cursor + p) % order.length;
+      var el = makeCard(order[realIdx]);
+      el.style.width = cardWidth() + 'px';
+      el.style.transition = 'none';
+      placeCard(el, p, 0, 0);        // 先摆到正确位置（含正确 opacity）
+      var targetOpacity = el.style.opacity;
+      el.style.opacity = '0';        // 从透明开始
+      stageEl.appendChild(el);
+      nodes.push({ el: el, position: p });
+      void el.offsetWidth;           // 强制重排，让起始状态生效
+      el.style.transition = '';      // 恢复 CSS 过渡
+      el.style.opacity = targetOpacity;  // 淡入到它该有的透明度
 
       if (posEl) posEl.textContent = String(cursor + 1);
       bindTopGesture();
@@ -218,12 +267,12 @@
 
       cursor = (cursor + 1) % order.length;
 
-      // 用 requestAnimationFrame 兜底：即使定时器被节流，帧回调也会推进
+      // 增量推进：不重建 DOM，避免新顶牌"二次弹起"
       var done = false;
       function advance() {
         if (done) return;
         done = true;
-        renderStack(true);
+        advanceInPlace(top);
       }
       setTimeout(advance, ANIM_MS);
       // 兜底：动画结束后短时间内强制推进，避免卡死
@@ -232,11 +281,20 @@
 
     /* ---------- 手势 ---------- */
     function topNode() {
-      // 顶牌 = position 为 0 的那张（DOM 中位于最后）
+      // 顶牌 = position 为 0 的那张
       for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].position === 0) return nodes[i];
+        if (Number(nodes[i].position) === 0) return nodes[i];
       }
-      return null;
+      // 兜底：直接按 zIndex 最高且可交互的实际 DOM 元素取
+      var best = null, bestZ = -1;
+      for (var j = 0; j < nodes.length; j++) {
+        var e = nodes[j].el;
+        if (!e || !e.parentNode) continue;
+        if (e.style.pointerEvents === 'none') continue;
+        var z = parseInt(e.style.zIndex, 10);
+        if (!isNaN(z) && z > bestZ) { bestZ = z; best = nodes[j]; }
+      }
+      return best;
     }
 
     function bindTopGesture() {
