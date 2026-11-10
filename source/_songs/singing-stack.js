@@ -40,7 +40,6 @@
     var cursor = 0;
     var shuffled = false;
     var inStack = false;
-    var locked = false;
     var nodes = [];
 
     /* ---------- 工具 ---------- */
@@ -197,18 +196,17 @@
 
     /* ---------- 飞出并切换 ---------- */
     function flyAway(direction) {
-      if (locked) return;
-      locked = true;
-
       var top = topNode();
-      if (!top) { locked = false; return; }
+      if (!top) return;
+      // 用顶牌自身状态判断，而不是靠外部锁变量
+      if (top.el.classList.contains('fly-out')) return;
 
       var audio = top.el.querySelector('audio');
       if (audio && !audio.paused) audio.pause();
 
       var dist = (stageEl.offsetWidth + 200) * (direction === 'left' ? -1 : 1);
 
-      // 抛物线：横向飞出 + 先上后下 + 大角度旋转 + 淡出
+      // 抛物线：横向飞出 + 下沉 + 大角度旋转 + 淡出
       top.el.classList.add('fly-out');
       top.el.style.transform =
         'translate3d(' + dist + 'px, 40px, 0) rotate(' +
@@ -218,11 +216,18 @@
       // 后面的牌同时上浮到新位置
       placeBehind(1);
 
-      setTimeout(function () {
-        cursor = (cursor + 1) % order.length;
-        locked = false;
-        renderStack(true);   // 带弹起动画
-      }, ANIM_MS);
+      cursor = (cursor + 1) % order.length;
+
+      // 用 requestAnimationFrame 兜底：即使定时器被节流，帧回调也会推进
+      var done = false;
+      function advance() {
+        if (done) return;
+        done = true;
+        renderStack(true);
+      }
+      setTimeout(advance, ANIM_MS);
+      // 兜底：动画结束后短时间内强制推进，避免卡死
+      setTimeout(advance, ANIM_MS + 260);
     }
 
     /* ---------- 手势 ---------- */
@@ -245,7 +250,7 @@
       var decided = false;
 
       function down(e) {
-        if (locked) return;
+        if (el.classList.contains('fly-out')) return;
         if (e.target.closest && e.target.closest('audio')) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
 
@@ -266,8 +271,9 @@
         var dy = e.clientY - startY;
 
         if (!decided) {
-          if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-          if (Math.abs(dy) > Math.abs(dx)) {
+          if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+          // 垂直意图明显才放弃，否则一律按水平处理
+          if (Math.abs(dy) > Math.abs(dx) * 1.6) {
             active = false;
             try { el.releasePointerCapture(pid); } catch (err) {}
             return;
@@ -364,7 +370,6 @@
         var a = stageEl.querySelector('audio');
         if (a && !a.paused) a.pause();
 
-        locked = false;
         buildOrder();
         renderStack(false);
       });
