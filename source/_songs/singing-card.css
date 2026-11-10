@@ -1,0 +1,561 @@
+/* ============================================================
+   歌唱合集 · 声纹卡片样式
+   作者：异乡人博客
+   风格来源：站内 music-ball.css（毛玻璃 + 蓝色主调），保证视觉统一
+   依赖：Butterfly 5.4.3，暗色模式走 html[data-theme='dark']
+   ============================================================ */
+
+.song-list {
+  margin: 6px 0 0;
+  counter-reset: song-idx;
+}
+
+/* ---------- 单张卡片 ---------- */
+.song-card {
+  position: relative;
+  counter-increment: song-idx;
+  margin: 0 0 14px !important;
+  padding: 14px 18px 10px 18px;
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  transition:
+    transform 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease,
+    background 0.28s ease;
+  overflow: hidden;
+}
+
+.song-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%;
+  height: 76%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #60a5fa, #2563eb);
+  opacity: 0.55;
+  transition: opacity 0.28s ease, height 0.28s ease, top 0.28s ease;
+}
+
+.song-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(59, 130, 246, 0.38);
+  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.14);
+}
+
+.song-card:hover::before {
+  opacity: 1;
+  top: 4%;
+  height: 92%;
+}
+
+/* ---------- 卡片头部：序号 + 歌名 + 演唱者 ---------- */
+.song-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px !important;
+  flex-wrap: wrap;
+}
+
+.song-idx {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  user-select: none;
+}
+
+.song-idx::before {
+  content: counter(song-idx, decimal-leading-zero);
+}
+
+.song-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.35;
+}
+
+.song-by {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  white-space: nowrap;
+}
+
+/* ---------- 卡片底部：格式 / 大小小字 ---------- */
+.song-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px !important;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.song-meta i {
+  font-style: normal;
+  opacity: 0.85;
+}
+
+/* ---------- 播放器：融入卡片，去掉原生杂边 ---------- */
+.song-card audio {
+  display: block;
+  width: 100%;
+  height: 38px;
+  margin: 8px 0 0 !important;
+  border-radius: 10px;
+  background: transparent;
+  outline: none;
+}
+
+.song-card audio::-webkit-media-controls-panel {
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: 10px;
+}
+
+/* ---------- 页首说明条 ---------- */
+.song-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin: 14px 0 18px !important;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  color: #374151;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.12), rgba(37, 99, 235, 0.06));
+  border: 1px solid rgba(59, 130, 246, 0.16);
+}
+
+.song-summary b {
+  color: #2563eb;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.song-summary .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.35);
+}
+
+/* ---------- 暗色模式 ---------- */
+html[data-theme='dark'] .song-card {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(96, 165, 250, 0.18);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme='dark'] .song-card:hover {
+  border-color: rgba(96, 165, 250, 0.42);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.22);
+}
+
+html[data-theme='dark'] .song-title {
+  color: #e5e7eb;
+}
+
+html[data-theme='dark'] .song-idx {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.26);
+}
+
+html[data-theme='dark'] .song-by {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.22);
+}
+
+html[data-theme='dark'] .song-meta {
+  color: #9ca3af;
+}
+
+html[data-theme='dark'] .song-summary {
+  color: #d1d5db;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.14), rgba(37, 99, 235, 0.05));
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+html[data-theme='dark'] .song-summary b {
+  color: #93c5fd;
+}
+
+html[data-theme='dark'] .song-card audio::-webkit-media-controls-panel {
+  background: rgba(96, 165, 250, 0.08);
+}
+
+/* ---------- 窄屏：单列紧凑 ---------- */
+@media screen and (max-width: 768px) {
+  .song-card {
+    padding: 12px 14px 8px 14px;
+    border-radius: 14px;
+  }
+
+  .song-title {
+    font-size: 15px;
+  }
+
+  .song-by {
+    margin-left: 0;
+    font-size: 11px;
+  }
+
+  .song-head {
+    gap: 8px;
+  }
+
+  .song-meta {
+    gap: 10px;
+    font-size: 11px;
+  }
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .song-card,
+  .song-card::before {
+    transition: none !important;
+  }
+  .song-card:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   模式切换按钮
+   ============================================================ */
+.song-toggle-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 12px;
+}
+
+.song-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.song-mode-btn:hover {
+  background: rgba(37, 99, 235, 0.14);
+  border-color: rgba(37, 99, 235, 0.4);
+  transform: translateY(-1px);
+}
+
+.song-mode-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.song-mode-ico {
+  font-size: 15px;
+  line-height: 1;
+}
+
+html[data-theme='dark'] .song-mode-btn {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.24);
+}
+
+html[data-theme='dark'] .song-mode-btn:hover {
+  background: rgba(96, 165, 250, 0.18);
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+/* ============================================================
+   牌堆模式
+   ============================================================ */
+.song-stack {
+  margin: 0 0 10px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.song-stack[hidden] {
+  display: none !important;
+}
+
+.stack-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.stack-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.stack-count b {
+  color: #2563eb;
+  font-size: 16px;
+}
+
+.stack-shuffle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stack-shuffle:hover {
+  background: rgba(37, 99, 235, 0.15);
+}
+
+.stack-shuffle.seq {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.08);
+  border-color: rgba(5, 150, 105, 0.24);
+}
+
+.stack-shuffle.seq:hover {
+  background: rgba(5, 150, 105, 0.15);
+}
+
+/* 舞台 */
+.stack-stage {
+  position: relative;
+  height: 300px;
+  margin: 0 auto;
+  perspective: 1100px;
+  perspective-origin: 50% 40%;
+  touch-action: pan-y;
+}
+
+/* 每张牌 */
+.stack-card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(340px, 88%);
+  margin-left: calc(min(340px, 88%) / -2);
+  padding: 20px 20px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+  transition:
+    transform 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.34s ease,
+    box-shadow 0.34s ease;
+  cursor: grab;
+}
+
+.stack-card.dragging {
+  transition: none !important;
+  cursor: grabbing;
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.24);
+}
+
+.stack-card.is-top {
+  z-index: 10;
+}
+
+/* 飞出 */
+.stack-card.fly-out {
+  transition:
+    transform 0.42s cubic-bezier(0.4, 0, 1, 0.6),
+    opacity 0.42s ease;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* 卡片内部 */
+.stack-card .stack-idx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+}
+
+.stack-card .stack-title {
+  margin: 14px 0 4px;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+}
+
+.stack-card .stack-by {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 3px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 999px;
+}
+
+.stack-card .stack-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(37, 99, 235, 0.18);
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stack-card .stack-meta i {
+  font-style: normal;
+  opacity: 0.85;
+}
+
+.stack-card audio {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin: 10px 0 0;
+  border-radius: 10px;
+  outline: none;
+}
+
+.stack-hint {
+  margin-top: 14px;
+  font-size: 12px;
+  text-align: center;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+}
+
+/* 牌堆暗色 */
+html[data-theme='dark'] .stack-card {
+  background: rgba(38, 40, 48, 0.88);
+  border-color: rgba(96, 165, 250, 0.22);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme='dark'] .stack-card .stack-title {
+  color: #f3f4f6;
+}
+
+html[data-theme='dark'] .stack-card .stack-idx {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.26);
+}
+
+html[data-theme='dark'] .stack-card .stack-by {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.22);
+}
+
+html[data-theme='dark'] .stack-card .stack-meta {
+  color: #9ca3af;
+  border-top-color: rgba(96, 165, 250, 0.2);
+}
+
+html[data-theme='dark'] .stack-count {
+  color: #9ca3af;
+}
+
+html[data-theme='dark'] .stack-count b {
+  color: #93c5fd;
+}
+
+html[data-theme='dark'] .stack-shuffle {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.24);
+}
+
+html[data-theme='dark'] .stack-shuffle.seq {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.26);
+}
+
+html[data-theme='dark'] .stack-hint {
+  color: #6b7280;
+}
+
+/* 牌堆窄屏 */
+@media screen and (max-width: 768px) {
+  .stack-stage {
+    height: 270px;
+  }
+
+  .stack-card {
+    width: 86%;
+    margin-left: -43%;
+    padding: 16px 16px 12px;
+    border-radius: 18px;
+  }
+
+  .stack-card .stack-title {
+    font-size: 19px;
+    margin-top: 10px;
+  }
+
+  .song-toggle-bar {
+    justify-content: center;
+  }
+}

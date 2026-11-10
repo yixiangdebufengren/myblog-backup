@@ -1,0 +1,87 @@
+# ==========================================================
+#  歌唱合集 · 歌曲数据
+#  ------------------------------------------------------
+#  【以后加歌只需要改这个文件】复制一段，改 5 个字段即可：
+#
+#  - title: 歌名
+#    by: 演唱者
+#    file: /audios/singing/文件名.mp3
+#    size: 文件大小（写给人看的，如 346 KB / 2.0 MB）
+#    note: 备注（可选，比如"标准录音 12"）
+#
+#  注意：file 里的音频要先放进 source/audios/singing/
+#        卡片模式与牌堆模式共用这一份数据，不会不一致
+# ==========================================================
+
+- title: 路过人间
+  by: me
+  file: /audios/singing/路过人间.mp3
+  size: 346 KB
+  type: MP3
+
+- title: 青花瓷
+  by: zj
+  file: /audios/singing/青花瓷.mp3
+  size: 2.0 MB
+  type: MP3
+
+- title: 特别的人
+  by: zzx
+  file: /audios/singing/特别的人.mp3
+  size: 1.3 MB
+  type: MP3
+
+- title: 童话
+  by: nmx
+  file: /audios/singing/童话.m4a
+  size: 385 KB
+  type: M4A
+
+- title: 我怀恋的
+  by: tyn
+  file: /audios/singing/我怀恋的.mp3
+  size: 801 KB
+  type: MP3
+
+- title: 谦让
+  by: lyx
+  file: /audios/singing/谦让.mp3
+  size: 345 KB
+  type: MP3
+
+- title: 心墙
+  by: cqq
+  file: /audios/singing/心墙.mp3
+  size: 467 KB
+  type: MP3
+
+- title: 谁家
+  by: zyh
+  file: /audios/singing/谁家.m4a
+  size: 606 KB
+  type: M4A
+
+- title: 静悄悄
+  by: zxy
+  file: /audios/singing/静悄悄.mp3
+  size: 223 KB
+  type: MP3
+
+- title: 我还有点小糊涂
+  by: lwt
+  file: /audios/singing/我还有点小糊涂.mp3
+  size: 335 KB
+  type: MP3
+
+- title: 我只在乎你
+  by: wjl
+  file: /audios/singing/我只在乎你.mp3
+  size: 319 KB
+  type: MP3
+
+- title: 没有什么不同
+  by: me
+  file: /audios/singing/没有什么不同.mp3
+  size: 1.0 MB
+  type: MP3
+  note: 标准录音 12
