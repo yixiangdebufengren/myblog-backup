@@ -87,7 +87,7 @@ ${cards}
   <div class="stack-toolbar">
     <span class="stack-count"><b id="stack-pos">1</b> / ${songs.length}</span>
     <button type="button" class="stack-shuffle" id="stack-shuffle" title="切换随机 / 顺序">
-      <span id="stack-shuffle-txt">🔀 随机</span>
+      <span id="stack-shuffle-txt">🔢 顺序</span>
     </button>
   </div>
   <div class="stack-stage" id="stack-stage"></div>

@@ -1,20 +1,23 @@
 /* ==========================================================
- *  歌唱合集 · 牌堆模式
+ *  歌唱合集 · 牌堆模式 v4
  *  ------------------------------------------------------
- *  视觉：卡片左对齐，后面的牌向右/下各偏移一点，只露出右边缘
- *  交互：Pointer Events 统一处理鼠标与触摸，不依赖 passive 设置
- *  数据：window.SONG_DATA（scripts/songlist.js 注入）
+ *  动画：Tinder 式——顶牌拖走飞出，下一张弹起成为新顶牌
+ *  要点：
+ *   1. 顶牌拖动时 scale 恒为 1，不缩放（消除"按压感"）
+ *   2. 后牌只做 translateY 上浮，不做缩放插值
+ *   3. 飞出走抛物线，带旋转与淡出
+ *   4. 新顶牌"弹起"用弹性曲线，轻微过冲
  * ========================================================== */
 (function () {
   'use strict';
 
-  var SWIPE_RATIO = 0.22;     // 相对卡片宽度的甩出阈值
-  var SWIPE_VELOCITY = 0.35;  // 速度阈值 px/ms
-  var ANIM_MS = 420;          // 与 CSS transition 对齐
-  var VISIBLE = 3;            // 同屏渲染牌数
-  var OFFSET_X = 14;          // 后面每张牌向右偏移
-  var OFFSET_Y = 10;          // 后面每张牌向下偏移
-  var SCALE_STEP = 0.05;      // 后面每张牌缩小比例
+  var SWIPE_RATIO = 0.22;    // 相对卡片宽度甩出阈值
+  var SWIPE_VELOCITY = 0.35; // 速度阈值 px/ms
+  var ANIM_MS = 380;         // 与 CSS 飞出动效对齐
+  var VISIBLE = 3;
+  var OFFSET_X = 16;         // 后牌横向错开
+  var OFFSET_Y = 12;         // 后牌纵向错开
+  var SIDE_GAP = 42;
 
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
@@ -39,7 +42,6 @@
     var inStack = false;
     var locked = false;
     var nodes = [];
-    var gestureBound = false;
 
     /* ---------- 工具 ---------- */
     function shuffleArr(arr) {
@@ -56,7 +58,7 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '\u0026quot;');
     }
 
     function buildOrder() {
@@ -65,7 +67,40 @@
       cursor = 0;
     }
 
-    /* ---------- 生成一张牌 ---------- */
+    /* 同步按钮文案与状态 */
+    function syncShuffleUI() {
+      if (!shuffleBtn) return;
+      shuffleBtn.classList.toggle('seq', !shuffled);
+      if (shuffleTxt) {
+        shuffleTxt.textContent = shuffled ? '🔀 随机' : '🔢 顺序';
+      }
+      shuffleBtn.setAttribute('title',
+        shuffled ? '当前：随机排列（点击切换为顺序）' : '当前：按顺序（点击切换为随机）');
+    }
+
+    /* ---------- 卡片尺寸 ---------- */
+    function cardWidth() {
+      var w = stageEl.clientWidth || 300;
+      var gap = window.innerWidth <= 768 ? 30 : SIDE_GAP;
+      return Math.max(w - gap, 200);
+    }
+
+    function applySizes() {
+      var w = cardWidth();
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].el.style.width = w + 'px';
+      }
+      var h = 0;
+      for (var j = 0; j < nodes.length; j++) {
+        var hh = nodes[j].el.offsetHeight;
+        if (hh > h) h = hh;
+      }
+      if (h > 0) {
+        stageEl.style.height = (h + VISIBLE * OFFSET_Y + 16) + 'px';
+      }
+    }
+
+    /* ---------- 卡片 ---------- */
     function makeCard(songIndex) {
       var s = data[songIndex];
       var el = document.createElement('div');
@@ -93,60 +128,75 @@
       return el;
     }
 
-    /* ---------- 布局：位置 0 = 顶牌 ---------- */
-    function layoutCard(el, position, dragX, dragRot) {
+    /* ---------- 布局：只做位移，不做缩放 ---------- */
+    function placeCard(el, position, dragX, dragRot) {
       if (position === 0) {
-        var tx = dragX || 0;
-        var rot = dragRot || 0;
         el.style.transform =
-          'translate3d(' + tx + 'px, 0, 0) rotate(' + rot + 'deg) scale(1)';
-        el.style.opacity = '1';
+          'translate3d(' + (dragX || 0) + 'px, 0, 0) rotate(' + (dragRot || 0) + 'deg)';
         el.style.zIndex = '10';
+        el.style.opacity = '1';
         el.style.pointerEvents = 'auto';
       } else {
-        var scale = 1 - position * SCALE_STEP;
+        // 后牌纯位移，不缩放 —— 消除"被按压"观感
         el.style.transform =
           'translate3d(' + (position * OFFSET_X) + 'px, ' +
-          (position * OFFSET_Y) + 'px, 0) scale(' + scale + ')';
-        el.style.opacity = '1';
+          (position * OFFSET_Y) + 'px, 0)';
         el.style.zIndex = String(10 - position);
+        el.style.opacity = String(1 - position * 0.12);
         el.style.pointerEvents = 'none';
       }
       el.classList.toggle('is-top', position === 0);
     }
 
-    /* 拖动过程中，后面的牌按进度上浮 */
-    function layoutBehind(progress) {
+    /* 拖动时后牌上浮：只动 Y，不缩放 */
+    function placeBehind(progress) {
       for (var i = 1; i < nodes.length; i++) {
         var from = i, to = i - 1;
-        var scale = (1 - from * SCALE_STEP) +
-          ((1 - to * SCALE_STEP) - (1 - from * SCALE_STEP)) * progress;
-        var ox = (from * OFFSET_X) + ((to * OFFSET_X) - (from * OFFSET_X)) * progress;
-        var oy = (from * OFFSET_Y) + ((to * OFFSET_Y) - (from * OFFSET_Y)) * progress;
+        var ox = from * OFFSET_X + (to - from) * OFFSET_X * progress;
+        var oy = from * OFFSET_Y + (to - from) * OFFSET_Y * progress;
         nodes[i].el.style.transform =
-          'translate3d(' + ox + 'px, ' + oy + 'px, 0) scale(' + scale + ')';
+          'translate3d(' + ox + 'px, ' + oy + 'px, 0)';
+        nodes[i].el.style.opacity =
+          String((1 - from * 0.12) + ((1 - to * 0.12) - (1 - from * 0.12)) * progress);
       }
     }
 
     /* ---------- 渲染 ---------- */
-    function renderStack() {
+    function renderStack(bounce) {
       stageEl.innerHTML = '';
       nodes = [];
 
       for (var p = VISIBLE - 1; p >= 0; p--) {
         var realIdx = (cursor + p) % order.length;
-        var songIndex = order[realIdx];
-        var el = makeCard(songIndex);
+        var el = makeCard(order[realIdx]);
         stageEl.appendChild(el);
         nodes.push({ el: el, position: p });
-        layoutCard(el, p, 0, 0);
+      }
+
+      applySizes();
+
+      for (var k = 0; k < nodes.length; k++) {
+        var n = nodes[k];
+        if (bounce && n.position === 0) {
+          // 新顶牌：从下方弹起
+          n.el.style.transition = 'none';
+          n.el.style.transform = 'translate3d(0, 26px, 0)';
+          n.el.style.opacity = '0.4';
+          void n.el.offsetWidth;
+          n.el.style.transition = '';
+          n.el.style.transform = 'translate3d(0, 0, 0)';
+          n.el.style.opacity = '1';
+        } else {
+          placeCard(n.el, n.position, 0, 0);
+        }
       }
 
       if (posEl) posEl.textContent = String(cursor + 1);
+      bindTopGesture();
     }
 
-    /* ---------- 下一张 ---------- */
-    function nextCard(direction) {
+    /* ---------- 飞出并切换 ---------- */
+    function flyAway(direction) {
       if (locked) return;
       locked = true;
 
@@ -156,128 +206,115 @@
       var audio = top.el.querySelector('audio');
       if (audio && !audio.paused) audio.pause();
 
-      var dist = direction === 'left' ? -(stageEl.offsetWidth + 120) : (stageEl.offsetWidth + 120);
+      var dist = (stageEl.offsetWidth + 200) * (direction === 'left' ? -1 : 1);
+
+      // 抛物线：横向飞出 + 先上后下 + 大角度旋转 + 淡出
       top.el.classList.add('fly-out');
       top.el.style.transform =
-        'translate3d(' + dist + 'px, -24px, 0) rotate(' +
-        (direction === 'left' ? -20 : 20) + 'deg) scale(0.92)';
+        'translate3d(' + dist + 'px, 40px, 0) rotate(' +
+        (direction === 'left' ? -26 : 26) + 'deg)';
+      top.el.style.opacity = '0';
 
-      layoutBehind(1);
+      // 后面的牌同时上浮到新位置
+      placeBehind(1);
 
       setTimeout(function () {
         cursor = (cursor + 1) % order.length;
-        renderStack();
         locked = false;
+        renderStack(true);   // 带弹起动画
       }, ANIM_MS);
     }
 
-    /* ---------- 手势：统一用 Pointer Events ---------- */
-    function bindGesture() {
-      if (gestureBound) return;
-      gestureBound = true;
+    /* ---------- 手势 ---------- */
+    function bindTopGesture() {
+      var el = nodes[0] && nodes[0].el;
+      if (!el) return;
 
       var startX = 0, startY = 0, startTime = 0;
-      var pointerId = null;
-      var dragging = false;
+      var pid = null;
+      var active = false;
       var decided = false;
-      var horizontal = false;
 
-      stageEl.style.touchAction = 'none';
-
-      function getTop() {
-        var t = stageEl.querySelector('.stack-card.is-top');
-        return t;
-      }
-
-      function onDown(e) {
+      function down(e) {
         if (locked) return;
         if (e.target.closest && e.target.closest('audio')) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-        var top = getTop();
-        if (!top) return;
-
-        pointerId = e.pointerId;
+        pid = e.pointerId;
         startX = e.clientX;
         startY = e.clientY;
         startTime = Date.now();
-        dragging = true;
+        active = true;
         decided = false;
-        horizontal = false;
 
-        if (stageEl.setPointerCapture) {
-          try { stageEl.setPointerCapture(pointerId); } catch (err) {}
-        }
+        try { el.setPointerCapture(pid); } catch (err) {}
       }
 
-      function onMove(e) {
-        if (!dragging || e.pointerId !== pointerId) return;
-
-        var top = getTop();
-        if (!top) return;
+      function move(e) {
+        if (!active || e.pointerId !== pid) return;
 
         var dx = e.clientX - startX;
         var dy = e.clientY - startY;
 
         if (!decided) {
           if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-          decided = true;
-          horizontal = Math.abs(dx) > Math.abs(dy);
-
-          if (horizontal) {
-            top.classList.add('dragging');
-          } else {
-            dragging = false;
+          if (Math.abs(dy) > Math.abs(dx)) {
+            active = false;
+            try { el.releasePointerCapture(pid); } catch (err) {}
             return;
           }
+          decided = true;
+          el.classList.add('dragging');
         }
 
-        if (!horizontal) return;
-        e.preventDefault();
+        if (e.cancelable) e.preventDefault();
 
-        var rot = dx / 20;
-        var tx = dx;
-        top.style.transform =
-          'translate3d(' + tx + 'px, 0, 0) rotate(' + rot + 'deg) scale(1)';
+        // 轻微阻尼，手感更接近真实纸牌
+        var tx = dx * 0.94;
+        el.style.transform =
+          'translate3d(' + tx + 'px, 0, 0) rotate(' + (dx / 22) + 'deg)';
 
-        var w = top.offsetWidth || 300;
-        var progress = Math.min(Math.abs(dx) / (w * 0.85), 1);
-        layoutBehind(progress);
+        var w = el.offsetWidth || 300;
+        placeBehind(Math.min(Math.abs(dx) / (w * 0.85), 1));
       }
 
-      function onUp(e) {
-        if (!dragging || e.pointerId !== pointerId) return;
-        dragging = false;
-        pointerId = null;
-
-        var top = getTop();
-        if (!top) return;
-        top.classList.remove('dragging');
+      function up(e) {
+        if (!active || e.pointerId !== pid) return;
+        active = false;
+        pid = null;
+        el.classList.remove('dragging');
+        try { el.releasePointerCapture(e.pointerId); } catch (err) {}
 
         var dx = e.clientX - startX;
         var dt = Math.max(Date.now() - startTime, 1);
-        var velocity = Math.abs(dx) / dt;
-        var w = top.offsetWidth || 300;
-        var threshold = w * SWIPE_RATIO;
+        var w = el.offsetWidth || 300;
 
-        if (Math.abs(dx) > threshold || velocity > SWIPE_VELOCITY) {
-          nextCard(dx < 0 ? 'left' : 'right');
+        if (Math.abs(dx) > w * SWIPE_RATIO ||
+            (Math.abs(dx) > 20 && Math.abs(dx) / dt > SWIPE_VELOCITY)) {
+          flyAway(dx < 0 ? 'left' : 'right');
         } else {
-          layoutCard(top, 0, 0, 0);
-          layoutBehind(0);
+          // 回弹：弹性曲线
+          el.classList.add('rebound');
+          placeCard(el, 0, 0, 0);
+          placeBehind(0);
+          setTimeout(function () {
+            el.classList.remove('rebound');
+          }, 420);
         }
       }
 
-      stageEl.addEventListener('pointerdown', onDown, { passive: true });
-      stageEl.addEventListener('pointermove', onMove, { passive: false });
-      stageEl.addEventListener('pointerup', onUp);
-      stageEl.addEventListener('pointercancel', onUp);
+      el.addEventListener('pointerdown', down, { passive: false });
+      el.addEventListener('pointermove', move, { passive: false });
+      el.addEventListener('pointerup', up, { passive: true });
+      el.addEventListener('pointercancel', up, { passive: true });
+      el.addEventListener('dragstart', function (e) { e.preventDefault(); });
     }
 
     /* ---------- 键盘 ---------- */
     document.addEventListener('keydown', function (e) {
       if (!inStack) return;
-      if (e.key === 'ArrowLeft') nextCard('left');
-      if (e.key === 'ArrowRight') nextCard('right');
+      if (e.key === 'ArrowLeft') flyAway('left');
+      if (e.key === 'ArrowRight') flyAway('right');
     });
 
     /* ---------- 模式切换 ---------- */
@@ -287,8 +324,8 @@
       var ico = modeBtn.querySelector('.song-mode-ico');
 
       if (inStack) {
-        var playing = listEl.querySelector('audio');
-        if (playing && !playing.paused) playing.pause();
+        var a1 = listEl.querySelector('audio');
+        if (a1 && !a1.paused) a1.pause();
 
         listEl.style.display = 'none';
         stackEl.hidden = false;
@@ -296,11 +333,11 @@
         if (ico) ico.textContent = '📋';
 
         buildOrder();
-        renderStack();
-        bindGesture();
+        renderStack(false);
+        syncShuffleUI();
       } else {
-        var p2 = stageEl.querySelector('audio');
-        if (p2 && !p2.paused) p2.pause();
+        var a2 = stageEl.querySelector('audio');
+        if (a2 && !a2.paused) a2.pause();
 
         stackEl.hidden = true;
         listEl.style.display = '';
@@ -313,15 +350,32 @@
     if (shuffleBtn) {
       shuffleBtn.addEventListener('click', function () {
         shuffled = !shuffled;
-        shuffleBtn.classList.toggle('seq', !shuffled);
-        if (shuffleTxt) shuffleTxt.textContent = shuffled ? '🔀 随机' : '🔢 顺序';
+        syncShuffleUI();
 
-        var playing = stageEl.querySelector('audio');
-        if (playing && !playing.paused) playing.pause();
+        var a = stageEl.querySelector('audio');
+        if (a && !a.paused) a.pause();
 
+        locked = false;
         buildOrder();
-        renderStack();
+        renderStack(false);
       });
     }
+
+    /* ---------- 尺寸变化 ---------- */
+    var rt = null;
+    window.addEventListener('resize', function () {
+      if (!inStack) return;
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        applySizes();
+        for (var k = 0; k < nodes.length; k++) {
+          var n = nodes[k];
+          placeCard(n.el, n.position, 0, 0);
+        }
+      }, 180);
+    });
+
+    // 初始按钮文案与状态对齐
+    syncShuffleUI();
   });
 })();

@@ -282,8 +282,9 @@
   position: absolute;
   left: 0;
   top: 0;
-  right: 42px;              /* 右侧留出 42px，让后面的牌露出来 */
+  /* 宽度由 JS 实测设定，不依赖 right，避免 absolute 撑不开 */
   padding: 18px 18px 14px;
+  box-sizing: border-box;
   border-radius: 20px;
   border: 1px solid rgba(59, 130, 246, 0.2);
   background: rgba(255, 255, 255, 0.9);
@@ -293,11 +294,16 @@
   transform-origin: 50% 60%;
   will-change: transform, opacity;
   transition:
-    transform 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.42s cubic-bezier(0.19, 1.4, 0.4, 1),
     opacity 0.34s ease,
     box-shadow 0.34s ease;
   cursor: grab;
   touch-action: none;
+}
+
+/* 回弹：带轻微过冲 */
+.stack-card.rebound {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .stack-card.dragging {
@@ -554,7 +560,6 @@ html[data-theme='dark'] .stack-hint {
   }
 
   .stack-card {
-    right: 30px;
     padding: 15px 15px 12px;
     border-radius: 18px;
   }
