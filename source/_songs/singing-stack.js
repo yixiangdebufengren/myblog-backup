@@ -150,14 +150,14 @@
 
     /* 拖动时后牌上浮：只动 Y，不缩放 */
     function placeBehind(progress) {
-      for (var i = 1; i < nodes.length; i++) {
-        var from = i, to = i - 1;
-        var ox = from * OFFSET_X + (to - from) * OFFSET_X * progress;
-        var oy = from * OFFSET_Y + (to - from) * OFFSET_Y * progress;
-        nodes[i].el.style.transform =
-          'translate3d(' + ox + 'px, ' + oy + 'px, 0)';
-        nodes[i].el.style.opacity =
-          String((1 - from * 0.12) + ((1 - to * 0.12) - (1 - from * 0.12)) * progress);
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        if (n.position === 0) continue;  // 顶牌不参与
+        var from = n.position, to = n.position - 1;
+        var ox = (from + (to - from) * progress) * OFFSET_X;
+        var oy = (from + (to - from) * progress) * OFFSET_Y;
+        n.el.style.transform = 'translate3d(' + ox + 'px, ' + oy + 'px, 0)';
+        n.el.style.opacity = String(1 - (from + (to - from) * progress) * 0.12);
       }
     }
 
@@ -200,7 +200,7 @@
       if (locked) return;
       locked = true;
 
-      var top = nodes[0];
+      var top = topNode();
       if (!top) { locked = false; return; }
 
       var audio = top.el.querySelector('audio');
@@ -226,8 +226,17 @@
     }
 
     /* ---------- 手势 ---------- */
+    function topNode() {
+      // 顶牌 = position 为 0 的那张（DOM 中位于最后）
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].position === 0) return nodes[i];
+      }
+      return null;
+    }
+
     function bindTopGesture() {
-      var el = nodes[0] && nodes[0].el;
+      var top = topNode();
+      var el = top && top.el;
       if (!el) return;
 
       var startX = 0, startY = 0, startTime = 0;
